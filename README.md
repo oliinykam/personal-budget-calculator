@@ -1,5 +1,13 @@
 # PersonalBudgetCalculator
 
+A modern, intuitive personal budget management application built with Angular. Track your income, expenses, and financial goals all in one place.
+## Features
+
+- 📊 Income & Expense Tracking - Easily add and categorize your financial transactions
+- 💰 Budget Planning - Set monthly budgets for different spending categories
+- 🎯 Financial Goals - Set and track progress toward your savings goals
+- 📱 Responsive Design - Works seamlessly on desktop, tablet, and mobile devices
+
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.5.
 
 ## Development server
