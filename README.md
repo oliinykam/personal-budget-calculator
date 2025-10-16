@@ -1,6 +1,6 @@
-# PersonalBudgetCalculator
+# **Project Name:** | 💰PersonalBudgetCalculator
+**Authors:** [Oliinyk Andrii](https://github.com/oliinykam) • [Nadiia Stelmakh](https://github.com/StelmakhNadiia) 
 
-A modern, intuitive personal budget management application built with Angular. Track your income, expenses, and financial goals all in one place.
 ## Features
 
 - 📊 Income & Expense Tracking - Easily add and categorize your financial transactions
