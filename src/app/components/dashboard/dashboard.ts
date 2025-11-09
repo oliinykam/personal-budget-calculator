@@ -1,0 +1,559 @@
+// ============================================
+// dashboard.component.ts
+// ============================================
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+interface Transaction {
+  id: number;
+  date: Date;
+  description: string;
+  category: string;
+  amount: number;
+  type: 'income' | 'expense';
+}
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="container">
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card income">
+          <h3>Total Income</h3>
+          <div class="amount">\${{ totalIncome.toFixed(2) }}</div>
+          <div class="change">+12% from last month</div>
+        </div>
+        <div class="stat-card expense">
+          <h3>Total Expenses</h3>
+          <div class="amount">\${{ totalExpenses.toFixed(2) }}</div>
+          <div class="change">-5% from last month</div>
+        </div>
+        <div class="stat-card balance">
+          <h3>Balance</h3>
+          <div class="amount">\${{ balance.toFixed(2) }}</div>
+          <div class="change">Available this month</div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="chart-section">
+        <div class="chart-card">
+          <h2>Spending by Category</h2>
+          <div class="chart-placeholder">
+            <div *ngFor="let item of categoryData" class="category-item">
+              <span class="category-label">{{ item.label }}</span>
+              <div class="category-bar-container">
+                <div class="category-bar" [style.width.%]="(item.value / maxCategoryValue) * 100"></div>
+              </div>
+              <span class="category-value">\${{ item.value.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h2>Recent Activity</h2>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-icon income-icon">↑</div>
+              <div>
+                <div class="activity-label">Total Income</div>
+                <div class="activity-amount">\${{ totalIncome.toFixed(2) }}</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon expense-icon">↓</div>
+              <div>
+                <div class="activity-label">Total Expenses</div>
+                <div class="activity-amount">\${{ totalExpenses.toFixed(2) }}</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon balance-icon">💰</div>
+              <div>
+                <div class="activity-label">Current Balance</div>
+                <div class="activity-amount">\${{ balance.toFixed(2) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="transactions-table">
+        <div class="table-header">
+          <h2>Recent Transactions</h2>
+          <button class="btn btn-primary">+ Add Transaction</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of recentTransactions">
+              <td>{{ transaction.date | date: 'MMM d, yyyy' }}</td>
+              <td>{{ transaction.description }}</td>
+              <td>
+                <span class="badge" [ngClass]="getCategoryBadgeClass(transaction.category)">
+                  {{ transaction.category }}
+                </span>
+              </td>
+              <td [ngClass]="getAmountClass(transaction.amount)">
+                {{ formatAmount(transaction.amount) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-card h3 {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .stat-card .amount {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card.income .amount {
+      color: #27ae60;
+    }
+
+    .stat-card.expense .amount {
+      color: #e74c3c;
+    }
+
+    .stat-card.balance .amount {
+      color: #3498db;
+    }
+
+    .stat-card .change {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+
+    .chart-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .chart-card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    .chart-placeholder {
+      padding: 1rem 0;
+    }
+
+    .category-item {
+      display: grid;
+      grid-template-columns: 120px 1fr 80px;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #ecf0f1;
+    }
+
+    .category-item:last-child {
+      border-bottom: none;
+    }
+
+    .category-label {
+      font-weight: 500;
+      color: #2c3e50;
+      font-size: 0.9rem;
+    }
+
+    .category-bar-container {
+      height: 8px;
+      background: #ecf0f1;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .category-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #e74c3c, #c0392b);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .category-value {
+      font-weight: 600;
+      color: #e74c3c;
+      text-align: right;
+      font-size: 0.9rem;
+    }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .activity-item:hover {
+      background: #e9ecef;
+    }
+
+    .activity-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .income-icon {
+      background: #d4edda;
+      color: #27ae60;
+    }
+
+    .expense-icon {
+      background: #f8d7da;
+      color: #e74c3c;
+    }
+
+    .balance-icon {
+      background: #d1ecf1;
+      color: #3498db;
+      font-size: 1.2rem;
+    }
+
+    .activity-label {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      margin-bottom: 0.25rem;
+    }
+
+    .activity-amount {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .transactions-table {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ecf0f1;
+    }
+
+    .table-header h2 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #f8f9fa;
+    }
+
+    th, td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+    }
+
+    th {
+      font-weight: 600;
+      color: #7f8c8d;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #ecf0f1;
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    .amount-positive {
+      color: #27ae60;
+      font-weight: 600;
+    }
+
+    .amount-negative {
+      color: #e74c3c;
+      font-weight: 600;
+    }
+
+    .badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .badge-food { background: #ffe5e5; color: #e74c3c; }
+    .badge-transport { background: #e3f2fd; color: #2196f3; }
+    .badge-entertainment { background: #f3e5f5; color: #9c27b0; }
+    .badge-salary { background: #e8f5e9; color: #4caf50; }
+    .badge-utilities { background: #fff3e0; color: #ff9800; }
+    .badge-default { background: #e0e0e0; color: #757575; }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .chart-section {
+        grid-template-columns: 1fr;
+      }
+
+      .transactions-table {
+        overflow-x: auto;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      thead {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+      }
+
+      tbody {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+      }
+
+      th, td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+      }
+
+      th:first-child, td:first-child {
+        min-width: 90px;
+      }
+
+      th:nth-child(2), td:nth-child(2) {
+        min-width: 140px;
+      }
+
+      th:nth-child(3), td:nth-child(3) {
+        min-width: 100px;
+      }
+
+      th:nth-child(4), td:nth-child(4) {
+        min-width: 90px;
+        text-align: right;
+      }
+
+      .table-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+
+      .table-header h2 {
+        font-size: 1.1rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stat-card .amount {
+        font-size: 1.5rem;
+      }
+
+      th, td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.8rem;
+      }
+
+      .badge {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.7rem;
+      }
+    }
+  `]
+})
+export class DashboardComponent implements OnInit {
+  totalIncome: number = 0;
+  totalExpenses: number = 0;
+  balance: number = 0;
+  recentTransactions: Transaction[] = [];
+  categoryData: { label: string, value: number }[] = [];
+  maxCategoryValue: number = 0;
+
+  // Mock data
+  private mockTransactions: Transaction[] = [
+    { id: 1, date: new Date('2025-10-14'), description: 'Grocery Shopping', category: 'Food', amount: -85.50, type: 'expense' },
+    { id: 2, date: new Date('2025-10-13'), description: 'Monthly Salary', category: 'Income', amount: 4200, type: 'income' },
+    { id: 3, date: new Date('2025-10-12'), description: 'Uber Ride', category: 'Transport', amount: -15.00, type: 'expense' },
+    { id: 4, date: new Date('2025-10-11'), description: 'Netflix Subscription', category: 'Entertainment', amount: -15.99, type: 'expense' },
+    { id: 5, date: new Date('2025-10-10'), description: 'Electricity Bill', category: 'Utilities', amount: -120.00, type: 'expense' },
+    { id: 6, date: new Date('2025-10-09'), description: 'Restaurant Dinner', category: 'Food', amount: -65.00, type: 'expense' },
+    { id: 7, date: new Date('2025-10-08'), description: 'Gas Station', category: 'Transport', amount: -50.00, type: 'expense' },
+    { id: 8, date: new Date('2025-10-05'), description: 'Freelance Project', category: 'Income', amount: 1040, type: 'income' }
+  ];
+
+  ngOnInit(): void {
+    this.loadDashboardData();
+  }
+
+  loadDashboardData(): void {
+    // Calculate totals
+    this.totalIncome = this.mockTransactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    this.totalExpenses = Math.abs(this.mockTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0));
+
+    this.balance = this.totalIncome - this.totalExpenses;
+
+    // Get recent transactions
+    this.recentTransactions = this.mockTransactions.slice(0, 5);
+
+    // Calculate category data
+    const expensesByCategory: { [key: string]: number } = {};
+    this.mockTransactions
+      .filter(t => t.type === 'expense')
+      .forEach(t => {
+        expensesByCategory[t.category] = (expensesByCategory[t.category] || 0) + Math.abs(t.amount);
+      });
+
+    this.categoryData = Object.entries(expensesByCategory)
+      .map(([label, value]) => ({ label, value }))
+      .sort((a, b) => b.value - a.value);
+
+    this.maxCategoryValue = Math.max(...this.categoryData.map(c => c.value));
+  }
+
+  getCategoryBadgeClass(category: string): string {
+    const classes: { [key: string]: string } = {
+      'Food': 'badge-food',
+      'Transport': 'badge-transport',
+      'Entertainment': 'badge-entertainment',
+      'Income': 'badge-salary',
+      'Utilities': 'badge-utilities'
+    };
+    return classes[category] || 'badge-default';
+  }
+
+  getAmountClass(amount: number): string {
+    return amount > 0 ? 'amount-positive' : 'amount-negative';
+  }
+
+  formatAmount(amount: number): string {
+    const sign = amount > 0 ? '+' : '';
+    return `${sign}$${Math.abs(amount).toFixed(2)}`;
+  }
+}
