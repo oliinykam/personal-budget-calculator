@@ -1,15 +1,80 @@
 # **Project Name:** | 💰PersonalBudgetCalculator
-**Authors:** [Oliinyk Andrii](https://github.com/oliinykam) • [Nadiia Stelmakh](https://github.com/StelmakhNadiia) 
+**👥Authors:** [Oliinyk Andrii](https://github.com/oliinykam) • [Nadiia Stelmakh](https://github.com/StelmakhNadiia) 
 
-## Features
+## ✨Features
+### 💸 Financial Management
 
-- 📊 Income & Expense Tracking - Easily add and categorize your financial transactions
+- 📊 Transaction Tracking - Add, edit, and delete income and expense transactions with ease
+- 🏷 Smart Categorization - Organize transactions by categories (Food, Transport, Entertainment, etc.)
+- 🔍 Advanced Filtering - Filter transactions by date, category, and type
+
+### 📈 Budget & Analytics
+
 - 💰 Budget Planning - Set monthly budgets for different spending categories
-- 🎯 Financial Goals - Set and track progress toward your savings goals
-- 📱 Responsive Design - Works seamlessly on desktop, tablet, and mobile devices
+- 📊 Visual Reports - Beautiful charts and graphs showing your financial trends
+- 🎯 Financial Goals - Set savings goals and track your progress
+- 💡 Smart Insights - Get personalized financial insights and recommendations
+
+### 🎨 User Experience
+
+- 📱 Responsive Design - Works perfectly on desktop, tablet, and mobile devices
+- 🌓 Modern UI - Clean and intuitive interface with smooth animations
+- ⚡️ Fast Performance - Optimized for speed and efficiency
+- 🔒 Secure - Your financial data stays safe and private
+
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.5.
 
+
+
+## 🏗️ Project Structure
+```text
+personal-budget-calculator/
+├── 📁 .angular/                 # Angular cache
+├── 📁 .vscode/                  # VS Code settings
+├── 📁 node_modules/             # Dependencies
+├── 📁 src/
+│   ├── 📁 app/
+│   │   ├── 📁 components/       # Application components
+│   │   │   ├── 📂 budgets/      # Budget management
+│   │   │   │   ├── budgets.component.ts
+│   │   │   │   ├── budgets.component.html
+│   │   │   │   └── budgets.component.css
+│   │   │   ├── 📂 dashboard/    # Main dashboard
+│   │   │   │   ├── dashboard.component.ts
+│   │   │   │   ├── dashboard.component.html
+│   │   │   │   └── dashboard.component.css
+│   │   │   ├── 📂 navbar/       # Navigation bar
+│   │   │   │   ├── navbar.component.ts
+│   │   │   │   ├── navbar.component.html
+│   │   │   │   └── navbar.component.css
+│   │   │   ├── 📂 reports/      # Financial reports & analytics
+│   │   │   │   ├── reports.component.ts
+│   │   │   │   ├── reports.component.html
+│   │   │   │   └── reports.component.css
+│   │   │   └── 📂 transactions/ # Transaction management
+│   │   │       ├── transactions.component.ts
+│   │   │       ├── transactions.component.html
+│   │   │       └── transactions.component.css
+│   │   ├── 📄 app.config.ts     # Application configuration
+│   │   ├── 📄 app.css           # Global component styles
+│   │   ├── 📄 app.html          # Root template
+│   │   ├── 📄 app.routes.ts     # Application routing
+│   │   ├── 📄 app.spec.ts       # Unit tests
+│   │   └── 📄 app.ts            # Root component
+│   ├── 📄 index.html            # Main HTML file
+│   ├── 📄 main.ts               # Application entry point
+│   └── 📄 styles.css            # Global styles
+├── 📄 .editorconfig             # Editor configuration
+├── 📄 .gitignore                # Git ignore rules
+├── 📄 angular.json              # Angular workspace configuration
+├── 📄 package-lock.json         # Locked dependencies
+├── 📄 package.json              # Project dependencies & scripts
+├── 📄 README.md                 # Project documentation
+├── 📄 tsconfig.app.json         # TypeScript config for app
+├── 📄 tsconfig.json             # Base TypeScript configuration
+└── 📄 tsconfig.spec.json        # TypeScript config for tests
+```
 ## Development server
 
 To start a local development server, run:
@@ -20,48 +85,3 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
