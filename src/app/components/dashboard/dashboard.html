@@ -1,5 +1,4 @@
 <div class="container">
-    <!-- Stats Grid -->
     <div class="stats-grid">
     <div class="stat-card income">
         <h3>Total Income</h3>
@@ -18,7 +17,6 @@
     </div>
     </div>
 
-    <!-- Charts Section -->
     <div class="chart-section">
     <div class="chart-card">
         <h2>Spending by Category</h2>
@@ -61,11 +59,10 @@
     </div>
     </div>
 
-    <!-- Recent Transactions -->
     <div class="transactions-table">
     <div class="table-header">
         <h2>Recent Transactions</h2>
-        <button class="btn btn-primary">+ Add Transaction</button>
+        <button class="btn btn-primary" (click)="openAddModal()">+ Add Transaction</button>
     </div>
     <table>
         <thead>
@@ -92,4 +89,46 @@
         </tbody>
     </table>
     </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add New Transaction</h2>
+      <button class="close-btn" (click)="closeAddModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Type</label>
+        <div class="type-selector">
+          <button 
+            [class.active]="newTransaction.type === 'income'" 
+            (click)="newTransaction.type = 'income'"
+            class="type-btn income">Income</button>
+          <button 
+            [class.active]="newTransaction.type === 'expense'" 
+            (click)="newTransaction.type = 'expense'"
+            class="type-btn expense">Expense</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" [(ngModel)]="newTransaction.description" placeholder="e.g. Salary, Coffee">
+      </div>
+      <div class="form-group">
+        <label>Amount ($)</label>
+        <input type="number" [(ngModel)]="newTransaction.amount" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select [(ngModel)]="newTransaction.category">
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="saveTransaction()">Save Transaction</button>
+    </div>
+  </div>
 </div>

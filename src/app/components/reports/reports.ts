@@ -17,6 +17,8 @@ interface ChartData {
 export class ReportsComponent implements OnInit {
   selectedPeriod: string = '6months';
   reportType: string = 'all';
+
+  showPdfPreview: boolean = false;
   
   avgIncome: number = 0;
   avgExpenses: number = 0;
@@ -227,5 +229,22 @@ export class ReportsComponent implements OnInit {
     if (type === 'savings') return '💰';
     if (type === 'budget') return '⚠️';
     return '💡';
+  }
+
+  openPdfPreview(): void {
+    this.showPdfPreview = true;
+  }
+
+  closePdfPreview(): void {
+    this.showPdfPreview = false;
+  }
+
+  downloadPdf(): void {
+    alert('Simulating PDF download... File saved!');
+    this.closePdfPreview();
+  }
+  
+  get currentDate(): Date {
+    return new Date();
   }
 }

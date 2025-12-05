@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // Import FormsModule
 
 interface Transaction {
   id: number;
@@ -13,7 +14,7 @@ interface Transaction {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule], // Add FormsModule here
   templateUrl: 'dashboard.html',
   styleUrls: ['dashboard.css']
 })
@@ -24,6 +25,19 @@ export class DashboardComponent implements OnInit {
   recentTransactions: Transaction[] = [];
   categoryData: { label: string, value: number }[] = [];
   maxCategoryValue: number = 0;
+
+  // Modal state
+  showAddModal: boolean = false;
+  
+  // New transaction model
+  newTransaction = {
+    description: '',
+    amount: null as number | null,
+    category: 'Food',
+    type: 'expense' as 'income' | 'expense'
+  };
+
+  categories = ['Food', 'Transport', 'Entertainment', 'Utilities', 'Income', 'Shopping'];
 
   // Mock data
   private mockTransactions: Transaction[] = [
@@ -69,6 +83,47 @@ export class DashboardComponent implements OnInit {
       .sort((a, b) => b.value - a.value);
 
     this.maxCategoryValue = Math.max(...this.categoryData.map(c => c.value));
+  }
+
+  // Modal Methods
+  openAddModal() {
+    this.showAddModal = true;
+  }
+
+  closeAddModal() {
+    this.showAddModal = false;
+    this.resetForm();
+  }
+
+  saveTransaction() {
+    if (!this.newTransaction.description || !this.newTransaction.amount) return;
+
+    const amount = this.newTransaction.type === 'expense' 
+      ? -Math.abs(this.newTransaction.amount) 
+      : Math.abs(this.newTransaction.amount);
+
+    const transaction: Transaction = {
+      id: Date.now(),
+      date: new Date(),
+      description: this.newTransaction.description,
+      category: this.newTransaction.category,
+      amount: amount,
+      type: this.newTransaction.type
+    };
+
+    // Add to the beginning of the list
+    this.mockTransactions.unshift(transaction);
+    this.loadDashboardData(); // Recalculate stats
+    this.closeAddModal();
+  }
+
+  resetForm() {
+    this.newTransaction = {
+      description: '',
+      amount: null,
+      category: 'Food',
+      type: 'expense'
+    };
   }
 
   getCategoryBadgeClass(category: string): string {

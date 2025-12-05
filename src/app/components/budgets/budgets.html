@@ -7,6 +7,22 @@
   </div>
 
   <div class="add-form" *ngIf="showAddForm">
+    <h3>Add New Budget</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Category Name</label>
+        <input type="text" [(ngModel)]="newBudget.category" placeholder="e.g. Groceries">
+      </div>
+      <div class="form-group">
+        <label>Monthly Limit ($)</label>
+        <input type="number" [(ngModel)]="newBudget.budgetAmount" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Icon (Emoji)</label>
+        <input type="text" [(ngModel)]="newBudget.icon" placeholder="💰">
+      </div>
+    </div>
+
     <div class="form-actions">
       <button class="btn btn-success" (click)="addBudget()">Create Budget</button>
       <button class="btn btn-secondary" (click)="showAddForm = false">Cancel</button>
