@@ -1,0 +1,70 @@
+<div class="container">
+  <div class="page-header">
+    <h1>Monthly Budgets</h1>
+    <button class="btn btn-primary" (click)="showAddForm = !showAddForm">
+      {{ showAddForm ? '✕ Cancel' : '+ Create Budget' }}
+    </button>
+  </div>
+
+  <div class="add-form" *ngIf="showAddForm">
+    <div class="form-actions">
+      <button class="btn btn-success" (click)="addBudget()">Create Budget</button>
+      <button class="btn btn-secondary" (click)="showAddForm = false">Cancel</button>
+    </div>
+  </div>
+
+  <div class="summary-cards">
+    <div class="summary-card">
+      <div class="summary-icon total">💰</div>
+      <div class="summary-content">
+        <h3>Total Budget</h3>
+        <div class="summary-amount">${{ getTotalBudget().toFixed(2) }}</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon spent">💸</div>
+      <div class="summary-content">
+        <h3>Total Spent</h3>
+        <div class="summary-amount">${{ getTotalSpent().toFixed(2) }}</div>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon remaining">💵</div>
+      <div class="summary-content">
+        <h3>Remaining</h3>
+        <div class="summary-amount">${{ getRemaining().toFixed(2) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="budget-list">
+    <div class="budget-item" *ngFor="let budget of budgets">
+      <div class="budget-header">
+        <h3>{{ budget.icon }} {{ budget.category }}</h3>
+        <div class="budget-amount">
+          ${{ budget.spentAmount.toFixed(2) }} / ${{ budget.budgetAmount.toFixed(2) }}
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div 
+          class="progress-fill" 
+          [ngClass]="getProgressClass(budget)"
+          [style.width.%]="getProgressPercentage(budget)">
+        </div>
+      </div>
+      <div class="budget-footer">
+        <div class="progress-text">
+          {{ getProgressPercentage(budget) }}% used - 
+          ${{ (budget.budgetAmount - budget.spentAmount).toFixed(2) }} remaining
+        </div>
+        <button class="btn btn-delete btn-small" (click)="deleteBudget(budget.id)">
+          Delete
+        </button>
+      </div>
+    </div>
+    
+    <div *ngIf="budgets.length === 0" class="empty-state">
+      <p>No budgets created yet. Click "Create Budget" to get started!</p>
+    </div>
+  </div>
+</div>
